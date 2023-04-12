@@ -30,6 +30,59 @@ class Custom_Dataset(Dataset):
         
         return sample
     
+def split_dataset(gbreb_train_size=0.4, gbreb_val_size=0.5, gbreb_test_size=0.5):
+    '''
+    parameters: gbreb_train_size
+                gbreb_val_size
+                gbreb_test_size
+    *note: gbreb_val_size + gbreb_test_size = 1
+    
+    does: split StatsLib and GBREB 
+    return: dictionary of pd.dataframes (train_set, validation_set, test_set)
+    '''
+    
+    f_path = 'data/selected_statslib.csv'
+    statslib_df = pd.read_csv(f_path)
+    statslib_df.drop(columns='Unnamed: 0', axis=1, inplace=True)
+
+    f_path = 'data/selected_GBREB.csv'
+    GBREB_df = pd.read_csv(f_path)
+    GBREB_df.drop(columns='Unnamed: 0', axis=1, inplace=True)
+    
+    total = pd.concat([statslib_df, GBREB_df], axis=0)
+    total.fillna(0, inplace=True)
+    
+    feature_list = list(total.columns)
+    feature_list.remove('MEDV')
+    feature_list
+
+    X_gbreb_train, X_gbreb, y_gbreb_train, y_gbreb = train_test_split(total[total['year'] != 1993][feature_list], 
+                                                                      total[total['year']!=1993]['MEDV'],
+                                                                      train_size=gbreb_train_size, 
+                                                                     shuffle=True)
+    X_gbreb_val, X_gbreb_test, y_gbreb_val, y_gbreb_test = train_test_split(X_gbreb, 
+                                                                            y_gbreb, 
+                                                                            train_size=gbreb_val_size, 
+                                                                            shuffle=True)
+    
+    X_train_set = pd.concat([total[total['year'] == 1993][feature_list], X_gbreb_train], axis=0)
+    y_train_set = pd.concat([total[total['year'] == 1993]['MEDV'], y_gbreb_train], axis=0)
+    X_val_set, y_val_set = X_gbreb_val, y_gbreb_val
+    X_test_set, y_test_set = X_gbreb_test, y_gbreb_test
+
+    X_train_set.reset_index(inplace=True, drop=True)
+    y_train_set.reset_index(inplace=True, drop=True)
+    X_val_set.reset_index(inplace=True, drop=True)
+    y_val_set.reset_index(inplace=True, drop=True)
+    X_test_set.reset_index(inplace=True, drop=True)
+    y_test_set.reset_index(inplace=True, drop=True)
+    
+    data = {'X_train':X_train_set, 'y_train':y_train_set,
+            'X_val': X_val_set, 'y_val': y_val_set, 
+            'X_test': X_test_set, 'y_test':y_test_set}
+    
+    return data
+
 def load_dataloader(source=['statslib', 'gbreb']):
     '''
     function: load_dataloader
