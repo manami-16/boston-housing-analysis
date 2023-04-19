@@ -1,11 +1,5 @@
-.
-|____data_exploration.ipynb
-|____statslib_feature_extraction.ipynb
-|____.git
-| |____config
-| |____objects
-| 
-|____data
-| |____housing.csv
-| |____gdreb.csv
-| |____statslib.zip
+# Analysis on Return on Investment
+
+### Applied Mathematics Capstone Project
+Authors: Anqi Wu, Manami Kanemura, Mingze Zhao, Jiani He, Xiaofei Xie, Jingyi Zhang
+Northeastern University
